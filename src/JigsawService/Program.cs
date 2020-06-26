@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -18,6 +14,9 @@ namespace JigsawService
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
+                    var user = new Fake.User();
+                    services.AddSingleton<IUser>(user);
+                    services.AddSingleton<Fake.ISimulation>(new Fake.Simulation(user));
                     services.AddHostedService<Worker>();
                 });
     }

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -8,22 +5,31 @@ using Microsoft.Extensions.Logging;
 
 namespace JigsawService
 {
-    public class Worker : BackgroundService
+    internal class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
+        private readonly IUser user;
+        private readonly Fake.ISimulation simulation;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(ILogger<Worker> logger, IUser user, Fake.ISimulation simulation)
         {
             _logger = logger;
+            this.user = user;
+            this.simulation = simulation;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
-            }
+            user.UploadJigsaw += User_UploadJigsaw;
+
+            simulation.UserUploadJigsaw(@"d:\jigsawChain\images\1.jpg");
+
+            await Task.Delay(Timeout.Infinite, stoppingToken);
+        }
+
+        private void User_UploadJigsaw(IRpcToken id, byte[] image)
+        {
+            _logger.LogInformation($"RPC: {image.Length}");
         }
     }
 }
