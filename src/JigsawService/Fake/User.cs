@@ -25,11 +25,11 @@ namespace JigsawService.Fake
 
         public void RaiseChooseTempletEvent(string id, int tolerancy, int noise)
         {
-            var templet = "[{\"key\":\"tolerancy\",\"value\":"
-                         + tolerancy.ToString()
-                         + "},{\"key\":\"noise\":"
-                         + noise.ToString()
-                         + "}]";
+            var templet = "{\"tolerancy\":"
+                          + tolerancy.ToString()
+                          + ",\"noise\":"
+                          + noise.ToString()
+                          + "}";
             ChooseTemplet.Invoke(null, id, templet);
         }
 

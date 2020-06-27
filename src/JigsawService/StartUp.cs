@@ -39,7 +39,7 @@ namespace JigsawService
             services.AddSingleton<IStored<string, Image>>(_ => new MemoryStored<string, Image>(generateId));
             services.AddSingleton<IStored<string, int>>(_ => new MemoryStored<string, int>(generateId));
 
-            services.AddSingleton<IRawTemplets, Fake.RawTemplets>();
+            services.AddSingleton<IRawTemplets, RawTemplets>();
 
             services.AddSingleton<ICoins, Fake.Coins>();
 
