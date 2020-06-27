@@ -5,6 +5,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using JigsawService.Extensions;
 using JigsawService.Templets;
+using SixLabors.ImageSharp.Processing;
 
 namespace JigsawService
 {
@@ -12,18 +13,24 @@ namespace JigsawService
     {
         private readonly IImageDecoder decoder;
         private readonly ((int min, int max) width, (int min, int max) height) limitations;
+        private readonly (int width, int height) prototype;
         private readonly ILogger<Images> logger;
 
-        public Images(IImageDecoder decoder, ((int, int), (int, int)) limitations, ILogger<Images> logger)
+        public Images(
+                IImageDecoder decoder, 
+                ((int, int), (int, int)) limitations, 
+                (int, int) prototype, 
+                ILogger<Images> logger)
         {
             this.decoder = decoder;
             this.limitations = limitations;
+            this.prototype = prototype;
             this.logger = logger;
         }
 
         public Image BuildPreview(Image origin, Templet templet)
         {
-            return origin; //TODO
+            return origin.Clone(_ => _.Resize(prototype.width, prototype.height));
         }
 
         public Maybe<Image, string> Load(byte[] image)

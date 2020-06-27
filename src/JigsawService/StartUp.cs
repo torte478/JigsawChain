@@ -24,12 +24,16 @@ namespace JigsawService
                 decoder: _.GetRequiredService<IImageDecoder>(),
                 limitations: (
                     (
-                        config["SizeLimits:Width:Min"].ToInt(),
-                        config["SizeLimits:Width:Max"].ToInt()
+                        config.Get("SizeLimits").Get("Width").Get("Min").ToInt(),
+                        config.Get("SizeLimits").Get("Width").Get("Max").ToInt()
                     ),
                     (
-                        config["SizeLimits:Height:Min"].ToInt(),
-                        config["SizeLimits:Height:Max"].ToInt())
+                        config.Get("SizeLimits").Get("Height").Get("Min").ToInt(),
+                        config.Get("SizeLimits").Get("Height").Get("Max").ToInt()
+                    )),
+                prototype: (
+                        config.Get("Prototype").Get("Width").ToInt(),
+                        config.Get("Prototype").Get("Height").ToInt()
                     ),
                 logger: _.GetRequiredService<ILogger<Images>>()));
 

@@ -52,7 +52,7 @@ namespace JigsawService
             try
             {
                 Task.Delay(100).Wait();
-                (user as Fake.User).RaiseUploadJigsawEvent(@"d:\jigsawChain\images\input\3.jpg");
+                (user as Fake.User).RaiseUploadJigsawEvent(@"d:\jigsawChain\images\input\1.jpg");
                 (user as Fake.User).RaiseChooseTempletEvent("42", 0, 0);
             }
             catch (Exception ex)
