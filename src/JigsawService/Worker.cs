@@ -5,15 +5,18 @@ using Microsoft.Extensions.Logging;
 
 namespace JigsawService
 {
-    internal class Worker : BackgroundService
+    internal sealed class Worker : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
         private readonly IUser user;
+        private readonly IImages images;
+        private readonly ILogger<Worker> logger;
 
-        public Worker(IUser user, ILogger<Worker> logger)
+        public Worker(IUser user, IImages images, ILogger<Worker> logger)
         {
-            _logger = logger;
             this.user = user;
+            this.images = images;
+            this.logger = logger;
+
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -33,7 +36,11 @@ namespace JigsawService
 
         private void User_UploadJigsaw(IRpcToken id, byte[] image)
         {
-            _logger.LogInformation($"RPC: {image.Length}");
+            var target = image._(images.Load);
+            if (target.IsLeft)
+                target.Left._(_ => user.SendError(id, _));
+            else
+                logger.LogInformation("Image validated!");
         }
     }
 }

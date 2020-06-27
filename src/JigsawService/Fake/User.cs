@@ -1,26 +1,30 @@
 ﻿using System;
 using System.IO;
-using SixLabors.ImageSharp;
+using Microsoft.Extensions.Logging;
 
 namespace JigsawService.Fake
 {
     internal sealed class User : IUser
     {
+        private readonly ILogger<User> logger;
+
         public event Action<IRpcToken, byte[]> UploadJigsaw;
+
+        public User(ILogger<User> logger)
+        {
+            this.logger = logger;
+        }
 
         public void RaiseUploadJigsawEvent(string path)
         {
-            using (var image = Image.Load(path))
-            {
-                using (var stream = new MemoryStream())
-                {
-                    var encoder = new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder();
-                    image.Save(stream, encoder);
-                    var bytes = stream.ToArray();
+            var bytes = File.ReadAllBytes(path);
+            UploadJigsaw.Invoke(null, bytes);
+        }
 
-                    UploadJigsaw.Invoke(null, bytes);
-                }
-            }
+        public IUser SendError(IRpcToken token, string message)
+        {
+            logger.LogInformation($"Error: {message}");
+            return this;
         }
     }
 }

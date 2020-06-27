@@ -14,7 +14,11 @@ namespace JigsawService
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddSingleton<IUser>(new Fake.User());
+                    services.AddTransient<IUser, Fake.User>();
+                    services.AddTransient<
+                        SixLabors.ImageSharp.Formats.IImageDecoder, 
+                        SixLabors.ImageSharp.Formats.Jpeg.JpegDecoder>();
+                    services.AddTransient<IImages, Images>();
                     services.AddHostedService<Worker>();
                 });
     }
