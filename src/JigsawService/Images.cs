@@ -6,20 +6,21 @@ using SixLabors.ImageSharp.Formats;
 using JigsawService.Extensions;
 using JigsawService.Templets;
 using SixLabors.ImageSharp.Processing;
+using System.Linq;
 
 namespace JigsawService
 {
     internal sealed class Images : IImages
     {
         private readonly IImageDecoder decoder;
-        private readonly ((int min, int max) width, (int min, int max) height) limitations;
-        private readonly (int width, int height) prototype;
+        private readonly (Size min, Size max) limitations;
+        private readonly (Size size, Size pieces) prototype;
         private readonly ILogger<Images> logger;
 
         public Images(
                 IImageDecoder decoder, 
-                ((int, int), (int, int)) limitations, 
-                (int, int) prototype, 
+                (Size, Size) limitations, 
+                (Size, Size) prototype, 
                 ILogger<Images> logger)
         {
             this.decoder = decoder;
@@ -30,7 +31,20 @@ namespace JigsawService
 
         public Image BuildPreview(Image origin, Templet templet)
         {
-            return origin.Clone(_ => _.Resize(prototype.width, prototype.height));
+            var preview = origin.Clone(_ => _.Resize(prototype.size.Width, prototype.size.Height));
+
+            var size = new Size(
+                            preview.Width / prototype.pieces.Width, 
+                            preview.Height / prototype.pieces.Height);
+            var pieces = Enumerable
+                            .Range(0, prototype.pieces.Height)
+                            .SelectMany(i => Enumerable
+                                             .Range(0, prototype.pieces.Width)
+                                             .Select(j => (
+                                             j * size.Width,
+                                             i * size.Height)));
+
+            return preview;
         }
 
         public Maybe<Image, string> Load(byte[] image)
@@ -54,10 +68,10 @@ namespace JigsawService
 
         private bool RequiresLimitations(IImage image)
         {
-            return image.Width >= limitations.width.min
-                   && image.Width <= limitations.width.max
-                   && image.Height >= limitations.height.min
-                   && image.Height <= limitations.height.max;
+            return image.Width >= limitations.min.Width
+                   && image.Width <= limitations.max.Width
+                   && image.Height >= limitations.min.Height
+                   && image.Height <= limitations.max.Height;
         }
     }
 }

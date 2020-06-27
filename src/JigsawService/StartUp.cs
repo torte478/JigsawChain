@@ -22,19 +22,22 @@ namespace JigsawService
             services.AddSingleton<IImages>(_ => new Images(
 
                 decoder: _.GetRequiredService<IImageDecoder>(),
-                limitations: (
-                    (
+                limitations: (new Size(
                         config.Get("SizeLimits").Get("Width").Get("Min").ToInt(),
-                        config.Get("SizeLimits").Get("Width").Get("Max").ToInt()
+                        config.Get("SizeLimits").Get("Height").Get("Min").ToInt()
                     ),
-                    (
-                        config.Get("SizeLimits").Get("Height").Get("Min").ToInt(),
+                    new Size(
+                        config.Get("SizeLimits").Get("Width").Get("Max").ToInt(),
                         config.Get("SizeLimits").Get("Height").Get("Max").ToInt()
                     )),
-                prototype: (
-                        config.Get("Prototype").Get("Width").ToInt(),
-                        config.Get("Prototype").Get("Height").ToInt()
+                prototype: (new Size(
+                        config.Get("Prototype").Get("Size").Get("Width").ToInt(),
+                        config.Get("Prototype").Get("Size").Get("Height").ToInt()
                     ),
+                    new Size(
+                        config.Get("Prototype").Get("Pieces").Get("Width").ToInt(),
+                        config.Get("Prototype").Get("Pieces").Get("Height").ToInt()
+                        )),
                 logger: _.GetRequiredService<ILogger<Images>>()));
 
             //Func<string> generateId = Guid.NewGuid().ToString();
