@@ -35,6 +35,8 @@ namespace JigsawService
             services.AddSingleton<IStored<string, IImage>>(_ => new MemoryStored<string, IImage>(
                 generateId: Guid.NewGuid().ToString));
 
+            services.AddSingleton<IRawTemplets, Fake.RawTemplets>();
+
             services.AddHostedService<Worker>();
         }
     }

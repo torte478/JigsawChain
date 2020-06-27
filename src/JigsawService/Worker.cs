@@ -12,13 +12,20 @@ namespace JigsawService
         private readonly IUser user;
         private readonly IImages images;
         private readonly IStored<string, IImage> cache;
+        private readonly IRawTemplets templets;
         private readonly ILogger<Worker> logger;
 
-        public Worker(IUser user, IImages images, IStored<string, IImage> cache, ILogger<Worker> logger)
+        public Worker(
+                IUser user, 
+                IImages images, 
+                IStored<string, IImage> cache, 
+                IRawTemplets templets, 
+                ILogger<Worker> logger)
         {
             this.user = user;
             this.images = images;
             this.cache = cache;
+            this.templets = templets;
             this.logger = logger;
         }
 
@@ -47,7 +54,9 @@ namespace JigsawService
             }
 
             var stored = cache.Store(target.Right);
-            logger.LogDebug($"Image stored: {stored}");
+            var templet = templets.Serialize();
+
+            logger.LogDebug($"{stored} {templet}");
         }
     }
 }
