@@ -1,9 +1,11 @@
-﻿using SixLabors.ImageSharp;
+﻿using JigsawService.Templets;
+using SixLabors.ImageSharp;
 
 namespace JigsawService
 {
     internal interface IImages
     {
-        Maybe<IImage, string> Load(byte[] image);
+        Maybe<Image, string> Load(byte[] image);
+        Image BuildPreview(Image image, Templet right);
     }
 }

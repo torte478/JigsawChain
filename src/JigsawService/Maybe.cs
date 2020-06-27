@@ -36,5 +36,13 @@ namespace JigsawService
                         new Lazy<TLeft>(() => value)
                         );
         }
+
+        public void Match(Action<TRight> right, Action<TLeft> left)
+        {
+            if (IsRight)
+                right(Right);
+            else
+                left(Left);
+        }
     }
 }

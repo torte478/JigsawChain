@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using JigsawService.Extensions;
+using JigsawService.Templets;
 
 namespace JigsawService
 {
@@ -20,7 +21,12 @@ namespace JigsawService
             this.logger = logger;
         }
 
-        public Maybe<IImage, string> Load(byte[] image)
+        public Image BuildPreview(Image origin, Templet templet)
+        {
+            return origin; //TODO
+        }
+
+        public Maybe<Image, string> Load(byte[] image)
         {
             using var stream = new MemoryStream(image);
             try
@@ -28,14 +34,14 @@ namespace JigsawService
                 var decoded = decoder.Decode(Configuration.Default, stream);
 
                 if (!RequiresLimitations(decoded))
-                    return A<IImage, string>.Left("Image has wrong size");
+                    return A<Image, string>.Left("Image has wrong size");
 
-                return decoded._(A<IImage, string>.Right);
+                return decoded._(A<Image, string>.Right);
             }
             catch (Exception ex)
             {
                 logger.LogDebug($"Image decoding error: {ex.Message}");
-                return A<IImage, string>.Left("Wrong image format");
+                return A<Image, string>.Left("Wrong image format");
             }
         }
 

@@ -1,4 +1,6 @@
+using System;
 using Microsoft.Extensions.Hosting;
+using JigsawService.Extensions;
 
 namespace JigsawService
 {
@@ -6,7 +8,17 @@ namespace JigsawService
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            try
+            {
+                CreateHostBuilder(args).Build().Run();
+
+            }
+            catch (Exception ex)
+            {
+                ex.SaveTo(@"d:\jigsawChain\images\output\last_exception.txt");
+                Console.WriteLine($"Error: {ex.Message})");
+                return;
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

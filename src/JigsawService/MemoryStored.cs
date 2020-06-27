@@ -31,5 +31,11 @@ namespace JigsawService
             stored.Add(id, value);
             return id;
         }
+
+        public TKey Store(TKey key, TValue value)
+        {
+            stored.Add(key, value);
+            return key;
+        }
     }
 }

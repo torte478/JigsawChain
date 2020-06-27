@@ -6,6 +6,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using JigsawService.Extensions;
+using JigsawService.Templets;
 
 namespace JigsawService
 {
@@ -32,10 +33,15 @@ namespace JigsawService
                     ),
                 logger: _.GetRequiredService<ILogger<Images>>()));
 
-            services.AddSingleton<IStored<string, IImage>>(_ => new MemoryStored<string, IImage>(
-                generateId: Guid.NewGuid().ToString));
+            //Func<string> generateId = Guid.NewGuid().ToString();
+            Func<string> generateId = () => "42";
+
+            services.AddSingleton<IStored<string, Image>>(_ => new MemoryStored<string, Image>(generateId));
+            services.AddSingleton<IStored<string, int>>(_ => new MemoryStored<string, int>(generateId));
 
             services.AddSingleton<IRawTemplets, Fake.RawTemplets>();
+
+            services.AddSingleton<ICoins, Fake.Coins>();
 
             services.AddHostedService<Worker>();
         }
