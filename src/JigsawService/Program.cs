@@ -14,9 +14,7 @@ namespace JigsawService
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    var user = new Fake.User();
-                    services.AddSingleton<IUser>(user);
-                    services.AddSingleton<Fake.ISimulation>(new Fake.Simulation(user));
+                    services.AddSingleton<IUser>(new Fake.User());
                     services.AddHostedService<Worker>();
                 });
     }

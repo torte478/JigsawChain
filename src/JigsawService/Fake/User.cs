@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using SixLabors.ImageSharp;
 
 namespace JigsawService.Fake
 {
@@ -6,9 +8,19 @@ namespace JigsawService.Fake
     {
         public event Action<IRpcToken, byte[]> UploadJigsaw;
 
-        public void RaiseUploadJigsawEvent(IRpcToken token, byte[] bytes)
+        public void RaiseUploadJigsawEvent(string path)
         {
-            UploadJigsaw.Invoke(null, bytes);
+            using (var image = Image.Load(path))
+            {
+                using (var stream = new MemoryStream())
+                {
+                    var encoder = new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder();
+                    image.Save(stream, encoder);
+                    var bytes = stream.ToArray();
+
+                    UploadJigsaw.Invoke(null, bytes);
+                }
+            }
         }
     }
 }
