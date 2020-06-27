@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SixLabors.ImageSharp;
 using JigsawService.Extensions;
 
 namespace JigsawService
@@ -10,14 +11,15 @@ namespace JigsawService
     {
         private readonly IUser user;
         private readonly IImages images;
+        private readonly IStored<string, IImage> cache;
         private readonly ILogger<Worker> logger;
 
-        public Worker(IUser user, IImages images, ILogger<Worker> logger)
+        public Worker(IUser user, IImages images, IStored<string, IImage> cache, ILogger<Worker> logger)
         {
             this.user = user;
             this.images = images;
+            this.cache = cache;
             this.logger = logger;
-
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -39,9 +41,13 @@ namespace JigsawService
         {
             var target = image._(images.Load);
             if (target.IsLeft)
+            {
                 target.Left._(_ => user.SendError(id, _));
-            else
-                logger.LogInformation("Image validated!");
+                return;
+            }
+
+            var stored = cache.Store(target.Right);
+            logger.LogDebug($"Image stored: {stored}");
         }
     }
 }

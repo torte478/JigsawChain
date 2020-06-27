@@ -1,6 +1,6 @@
 ﻿namespace JigsawService.Extensions
 {
-    internal static class JsonStringExtensions
+    internal static class ParseExtensions
     {
         public static int ToInt(this string json)
         {
