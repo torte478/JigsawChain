@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using JigsawService.Extensions;
 
 namespace JigsawService
 {
@@ -14,11 +16,22 @@ namespace JigsawService
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddTransient<IUser, Fake.User>();
-                    services.AddTransient<
-                        SixLabors.ImageSharp.Formats.IImageDecoder, 
+                    services.AddSingleton<IUser, Fake.User>();
+                    services.AddSingleton<
+                        SixLabors.ImageSharp.Formats.IImageDecoder,
                         SixLabors.ImageSharp.Formats.Jpeg.JpegDecoder>();
-                    services.AddTransient<IImages, Images>();
+                    services.AddSingleton<IImages>(_ => new Images(
+                        decoder: _.GetRequiredService<SixLabors.ImageSharp.Formats.IImageDecoder>(),
+                        limitations: (
+                            (
+                                hostContext.Configuration["SizeLimits:Width:Min"].ToInt(),
+                                hostContext.Configuration["SizeLimits:Width:Max"].ToInt()
+                            ),
+                            (
+                                hostContext.Configuration["SizeLimits:Height:Min"].ToInt(),
+                                hostContext.Configuration["SizeLimits:Height:Max"].ToInt())
+                            ),
+                        logger: _.GetRequiredService<ILogger<Images>>()));
                     services.AddHostedService<Worker>();
                 });
     }

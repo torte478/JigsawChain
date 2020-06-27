@@ -1,4 +1,4 @@
-﻿namespace JigsawService.MaybeExtensions
+﻿namespace JigsawService.Extensions
 {
     internal static class A<TRight, TLeft>
     {

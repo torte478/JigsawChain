@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JigsawService
+namespace JigsawService.Extensions
 {
     internal static class FunctionalExtensions
     {
