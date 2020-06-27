@@ -26,5 +26,10 @@ namespace JigsawService.Fake
             logger.LogInformation($"Error: {message}");
             return this;
         }
+
+        public void SendTemplet(IRpcToken token, string id, string templet)
+        {
+            logger.LogDebug($"Reponse: {id} {templet}");
+        }
     }
 }

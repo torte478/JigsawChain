@@ -44,19 +44,19 @@ namespace JigsawService
             (user as Fake.User).RaiseUploadJigsawEvent(@"d:\jigsawChain\images\1.jpg");
         }
 
-        private void User_UploadJigsaw(IRpcToken id, byte[] image)
+        private void User_UploadJigsaw(IRpcToken token, byte[] image)
         {
             var target = image._(images.Load);
             if (target.IsLeft)
             {
-                target.Left._(_ => user.SendError(id, _));
+                target.Left._(_ => user.SendError(token, _));
                 return;
             }
 
             var stored = cache.Store(target.Right);
             var templet = templets.Serialize();
 
-            logger.LogDebug($"{stored} {templet}");
+            user.SendTemplet(token, stored, templet);
         }
     }
 }
