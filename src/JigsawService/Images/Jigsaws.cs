@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
-using JigsawService.Templets;
+using SixLabors.ImageSharp.Processing;
 using JigsawService.Extensions;
+using JigsawService.Templets;
 
 namespace JigsawService.Images
 {
@@ -14,33 +14,29 @@ namespace JigsawService.Images
         private static readonly Random random = new Random(DateTime.Now.Millisecond);
 
         private readonly Size size;
-        private readonly Size unit;
-        private readonly (int x, int y)[] pieces;
-        private readonly int total;
+        private readonly Size pieces;
+        private readonly Func<Image<Rgba32>, Size, IEnumerable<IPiece>> buildPieces;
 
-        public Jigsaws(Size size, Size unit, (int x, int y)[] pieces, int total)
+        private Jigsaws(
+                    Size size, 
+                    Size pieces,
+                    Func<Image<Rgba32>, Size, IEnumerable<IPiece>> buildPieces)
         {
             this.size = size;
-            this.unit = unit;
             this.pieces = pieces;
-            this.total = total;
+            this.buildPieces = buildPieces;
         }
 
-        public static Jigsaws Create(Size size, Size pieces)
+        public static Jigsaws Create(
+                        Size size,
+                        Size pieces,
+                        Func<Image<Rgba32>, Size, IEnumerable<IPiece>> buildPieces)
         {
             var resized = new Size(
                 size.Width - size.Width % pieces.Width,
                 size.Height - size.Height % pieces.Height);
 
-            var unit = new Size(
-                            resized.Width / pieces.Width,
-                            resized.Height / pieces.Height);
-
-            var coordinates = EnumeratePieces(pieces, unit).ToArray();
-
-            var total = unit.Width * unit.Height;
-
-            return new Jigsaws(resized, unit, coordinates, total);
+            return new Jigsaws(resized, pieces, buildPieces);
         }
 
         public Image BuildPreview(Image origin, Templet templet)
@@ -49,64 +45,41 @@ namespace JigsawService.Images
                             .CloneAs<Rgba32>()
                             .Clone(_ => _.Resize(size));
 
-            FillPieces(preview, templet);
+            foreach (var piece in buildPieces(preview, pieces))
+                Fill(piece, templet);
+
             return preview;
         }
 
-        private void FillPieces(Image<Rgba32> image, Templet templet)
+        private void Fill(IPiece piece, Templet templet)
         {
-            foreach (var piece in pieces)
-            {
-                var color = piece
-                            ._(_ => GetAverageColor(image, _))
-                            .Apply(_ => ApplyRandomTolerance(_, templet.Tolerancy));
-                DrawPiece(image, piece, color);
-                ApplyNoice(image, templet.Noise, piece);
-            }
+            var color = piece
+                        ._(GetAverageColor)
+                        .ForEachColor(_ => ApplyRandomTolerance(_, templet.Tolerancy));
+
+            using var image = piece.Canvas
+                        ._(_ => new Image<Rgba32>(_.Width, _.Height))
+                        ._(_ => _.Mutate(__ => __.Fill(color)))
+                        ._(_ => ApplyNoice(_, templet.Noise, piece));
+
+            piece.Draw(image);
         }
 
-        private void ApplyNoice(Image<Rgba32> image, int noise, (int x, int y) piece)
-        {
-            var noised = noise * total / 100.0;
-            for (var i = 0; i < noised; ++i)
-            {
-                var x = piece.x + random.Next(unit.Width);
-                var y = piece.y + random.Next(unit.Height);
-                image[x, y] = new Rgba32().Apply(_ => (byte)random.Next(256));
-            }
-        }
-
-        private void DrawPiece(Image<Rgba32> image, (int x, int y) piece, Rgba32 color)
-        {
-            for (var y = 0; y < unit.Height && piece.y + y < image.Height; ++y)
-            {
-                var span = image.GetPixelRowSpan(piece.y + y);
-                for (var x = 0; x < unit.Width && piece.x + x < image.Width; ++x)
-                    span[piece.x + x] = color;
-            }
-        }
-
-        private Rgba32 GetAverageColor(Image<Rgba32> image, (int x, int y) piece)
+        private Rgba32 GetAverageColor(IPiece piece)
         {
             var r = 0;
             var g = 0;
             var b = 0;
-            for (var y = 0; y < unit.Height && piece.y + y < image.Height; ++y)
+            foreach (var pixel in piece.ToPixels())
             {
-                var span = image.GetPixelRowSpan(piece.y + y);
-                for (var x = 0; x < unit.Width && piece.x + x < image.Width; ++x)
-                {
-                    var pixel = span[piece.x + x];
-                    r += pixel.R * pixel.R;
-                    g += pixel.G * pixel.G;
-                    b += pixel.B * pixel.B;
-                }
+                r += pixel.R * pixel.R;
+                g += pixel.G * pixel.G;
+                b += pixel.B * pixel.B;
             }
-            var average = new Rgba32(
-                (byte)Math.Sqrt(r / total),
-                (byte)Math.Sqrt(g / total),
-                (byte)Math.Sqrt(b / total));
-            return average;
+            return new Rgba32(
+                (byte)Math.Sqrt(r / piece.Count),
+                (byte)Math.Sqrt(g / piece.Count),
+                (byte)Math.Sqrt(b / piece.Count));
         }
 
         private static byte ApplyRandomTolerance(byte origin, int tolerance)
@@ -124,11 +97,16 @@ namespace JigsawService.Images
             return (byte)next;
         }
 
-        private static IEnumerable<(int, int)> EnumeratePieces(Size pieces, Size factor)
+        private Image<Rgba32> ApplyNoice(Image<Rgba32> image, int noise, IPiece piece)
         {
-            for (var i = 0; i < pieces.Height; ++i)
-                for (var j = 0; j < pieces.Width; ++j)
-                    yield return (j * factor.Width, i * factor.Height);
+            var noised = noise * piece.Count / 100.0;
+            for (var i = 0; i < noised; ++i)
+            {
+                var x = random.Next(piece.Canvas.Width);
+                var y = random.Next(piece.Canvas.Height);
+                image[x, y] = new Rgba32().ForEachColor(_ => (byte)random.Next(256));
+            }
+            return image;
         }
     }
 }

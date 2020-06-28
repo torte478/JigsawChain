@@ -47,7 +47,9 @@ namespace JigsawService
                     new Size(
                         config.Get("Prototype").Get("Pieces").Get("Width").ToInt(),
                         config.Get("Prototype").Get("Pieces").Get("Height").ToInt()
-                        )));
+                        ),
+
+                buildPieces: SquarePiece.DecomposeImage));
 
             services.AddSingleton<IImages>(_ => new Images.Images(
                 loadImage: _.GetRequiredService<RawImages>().Load,

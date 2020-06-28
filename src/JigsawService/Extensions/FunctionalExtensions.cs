@@ -8,5 +8,11 @@ namespace JigsawService.Extensions
         {
             return f(x);
         }
+
+        public static T _<T>(this T x, Action<T> p)
+        {
+            p(x);
+            return x;   
+        }
     }
 }
