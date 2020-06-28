@@ -1,7 +1,7 @@
 ﻿using JigsawService.Templets;
 using SixLabors.ImageSharp;
 
-namespace JigsawService
+namespace JigsawService.Images
 {
     internal interface IImages
     {

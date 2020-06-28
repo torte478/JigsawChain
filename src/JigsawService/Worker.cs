@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using JigsawService.Extensions;
+using JigsawService.Images;
 using JigsawService.Templets;
 
 namespace JigsawService

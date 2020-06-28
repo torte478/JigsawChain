@@ -6,6 +6,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using JigsawService.Extensions;
+using JigsawService.Images;
 using JigsawService.Templets;
 
 namespace JigsawService
@@ -48,7 +49,7 @@ namespace JigsawService
                         config.Get("Prototype").Get("Pieces").Get("Height").ToInt()
                         )));
 
-            services.AddSingleton<IImages>(_ => new Images(
+            services.AddSingleton<IImages>(_ => new Images.Images(
                 loadImage: _.GetRequiredService<RawImages>().Load,
                 buildPreview: _.GetRequiredService<Jigsaws>().BuildPreview));
 

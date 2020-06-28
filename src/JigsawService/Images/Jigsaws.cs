@@ -7,7 +7,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using JigsawService.Templets;
 using JigsawService.Extensions;
 
-namespace JigsawService
+namespace JigsawService.Images
 {
     internal sealed class Jigsaws
     {

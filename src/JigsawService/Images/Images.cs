@@ -2,7 +2,7 @@
 using SixLabors.ImageSharp;
 using JigsawService.Templets;
 
-namespace JigsawService
+namespace JigsawService.Images
 {
     internal sealed class Images : IImages
     {

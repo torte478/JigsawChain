@@ -5,7 +5,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using JigsawService.Extensions;
 
-namespace JigsawService
+namespace JigsawService.Images
 {
     internal sealed class RawImages
     {
