@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
+using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using JigsawService.Extensions;
@@ -9,46 +11,52 @@ namespace JigsawService.Images
 {
     internal sealed class JigsawPiece : IPiece
     {
-        private readonly Point location;
         private readonly Image<Rgba32> origin;
+        private readonly Point location;
         private readonly IPath shape;
         private readonly Lazy<int> count;
 
         public int Count => count.Value;
 
-        public Size Canvas { get; }
+        public Size Canvas { get; set; }
 
-        private JigsawPiece(
-                    Point location, 
-                    Size canvas, 
+        public JigsawPiece(
                     Image<Rgba32> origin, 
+                    Point location, 
                     IPath shape, 
-                    Lazy<int> count)
+                    Size canvas)
         {
-            this.location = location;
             this.origin = origin;
+            this.location = location;
             this.shape = shape;
-            this.count = count;
+            count = new Lazy<int>(() => ToPixels().Length);
             Canvas = canvas;
-        }
-
-        public static IPiece Create(
-                                Image<Rgba32> origin, 
-                                Point location, 
-                                Size size, 
-                                IPath shape)
-        {
-            throw new System.NotImplementedException();
         }
 
         public IPiece Draw(Image<Rgba32> image)
         {
-            throw new System.NotImplementedException();
+            using var resized = image.Clone(_ => _.Resize(Canvas));
+            var brush = new ImageBrush(resized);
+            origin.Mutate(_ => _.Fill(brush, shape));
+            return this;
         }
 
         public Rgba32[] ToPixels()
         {
-            throw new System.NotImplementedException();
+            var pixels = new List<Rgba32>();
+            using var mask = new Image<Rgba32>(Canvas.Width, Canvas.Height);
+            mask.Mutate(_ => _.Fill(
+                                Color.Red,
+                                shape.TranslateTo(new PointF(0, 0))));
+
+            var masked = Color.Red.ToPixel<Rgba32>();
+            for (var i = 0; i < mask.Height; ++i)
+            for (var j = 0; j < mask.Width; ++j)
+            {
+                if (mask[j, i] == masked)
+                    pixels.Add(origin[location.X + j, location.Y + i]);
+            }   
+            return pixels.ToArray();
         }
     }
 }

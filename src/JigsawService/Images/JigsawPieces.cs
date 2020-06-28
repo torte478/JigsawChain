@@ -17,17 +17,18 @@ namespace JigsawService.Images
             var size = new Size(
                             image.Width / pieces.Width, 
                             image.Height / pieces.Height);
+            var width = 5 * size.Width / 4;
 
             var edges = GenerateEdges(pieces.Width, pieces.Height);
             for (var i = 0; i < pieces.Height; ++i)
             for (var j = 0; j < pieces.Width; ++j)
             {
                 var location = new Point(j * size.Width, i * size.Height);
-                yield return JigsawPiece.Create(
+                yield return new JigsawPiece(
                     origin: image,
                     location: location,
-                    size: size,
-                    shape: GenerateShape(location, edges[i, j], size.Width));
+                    shape: GenerateShape(location, edges[i, j], width),
+                    canvas: new Size(width, width));
             }
         }
 
@@ -64,10 +65,9 @@ namespace JigsawService.Images
         {
             if (degree == 0) return origin;
 
-            var target = FindTranslateTarget(unit, degree, edge);
             return origin
                    .RotateDegree(degree)
-                   ._(_ => _.Translate(target.X - _.Bounds.X, target.Y - _.Bounds.Y));
+                   .TranslateTo(FindTranslateTarget(unit, degree, edge));
 
         }
 
