@@ -1,7 +1,7 @@
 ﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
 
-namespace JigsawService.Images
+namespace JigsawService.Images.Pieces
 {
     internal interface IPieceShapes
     {

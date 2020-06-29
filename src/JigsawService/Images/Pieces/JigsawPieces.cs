@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace JigsawService.Images
+namespace JigsawService.Images.Pieces
 {
     internal sealed class JigsawPieces
     {

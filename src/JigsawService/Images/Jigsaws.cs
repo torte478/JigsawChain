@@ -5,6 +5,7 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using JigsawService.Extensions;
+using JigsawService.Images.Pieces;
 using JigsawService.Templets;
 
 namespace JigsawService.Images

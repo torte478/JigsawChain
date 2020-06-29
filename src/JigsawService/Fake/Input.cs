@@ -5,14 +5,14 @@ using SixLabors.ImageSharp;
 
 namespace JigsawService.Fake
 {
-    internal sealed class User : IUser
+    internal sealed class Input : IInput
     {
-        private readonly ILogger<User> logger;
+        private readonly ILogger<Input> logger;
 
         public event Action<IRpcToken, byte[]> UploadJigsaw;
         public event Action<IRpcToken, string, string> ChooseTemplet;
 
-        public User(ILogger<User> logger)
+        public Input(ILogger<Input> logger)
         {
             this.logger = logger;
         }
@@ -33,7 +33,7 @@ namespace JigsawService.Fake
             ChooseTemplet.Invoke(null, id, templet);
         }
 
-        public IUser SendError(IRpcToken token, string message)
+        public IInput SendError(IRpcToken token, string message)
         {
             logger.LogInformation($"Error: {message}");
             return this;
@@ -41,7 +41,7 @@ namespace JigsawService.Fake
 
         public void SendTemplet(IRpcToken token, string id, string templet)
         {
-            logger.LogDebug($"Reponse: {id} {templet}");
+            logger.LogDebug($"Response: {id} {templet}");
         }
 
         public void SendPreview(IRpcToken token, string id, Image preview, int cost)

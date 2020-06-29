@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using SixLabors.ImageSharp;
+using JigsawService.Images.Pieces;
 
 namespace JigsawService.Images.Tests
 {

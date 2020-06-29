@@ -4,7 +4,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using JigsawService.Extensions;
 
-namespace JigsawService.Images
+namespace JigsawService.Images.Pieces
 {
     internal sealed class SquarePiece : IPiece
     {

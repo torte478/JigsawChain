@@ -3,7 +3,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace JigsawService.Images.Tests
+namespace JigsawService.Images.Pieces.Tests
 {
     [TestFixture]
     internal sealed class JigsawPiece_Should

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace JigsawService.Images.Tests
+namespace JigsawService.Images.Pieces.Tests
 {
     [TestFixture]
     internal sealed class PieceShapes_Should

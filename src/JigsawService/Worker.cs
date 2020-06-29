@@ -12,7 +12,7 @@ namespace JigsawService
 {
     internal sealed class Worker : BackgroundService
     {
-        private readonly IUser user;
+        private readonly IInput user;
         private readonly IImages images;
         private readonly IStored<string, Image> cache;
         private readonly IRawTemplets templets;
@@ -21,7 +21,7 @@ namespace JigsawService
         private readonly ILogger<Worker> logger;
 
         public Worker(
-                IUser user, 
+                IInput user, 
                 IImages images, 
                 IStored<string, Image> cache, 
                 IRawTemplets templets,
@@ -40,8 +40,8 @@ namespace JigsawService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            user.UploadJigsaw += User_UploadJigsaw;
-            user.ChooseTemplet += User_ChooseTemplet;
+            user.UploadJigsaw += Input_UploadJigsaw;
+            user.ChooseTemplet += Input_ChooseTemplet;
 
             Task.Run(Fake);
 
@@ -54,10 +54,10 @@ namespace JigsawService
             {
                 Task.Delay(100).Wait();
 
-                (user as Fake.User).RaiseUploadJigsawEvent(
+                (user as Fake.Input).RaiseUploadJigsawEvent(
                     @"d:\jigsawChain\images\input\1.jpg");
 
-                (user as Fake.User).RaiseChooseTempletEvent("42", 3, 1);
+                (user as Fake.Input).RaiseChooseTempletEvent("42", 3, 1);
             }
             catch (Exception ex)
             {
@@ -67,7 +67,7 @@ namespace JigsawService
             }
         }
 
-        private void User_UploadJigsaw(IRpcToken token, byte[] image)
+        private void Input_UploadJigsaw(IRpcToken token, byte[] image)
         {
             image
             ._(images.Load)
@@ -84,7 +84,7 @@ namespace JigsawService
             user.SendTemplet(token, stored, templet);
         }
 
-        private void User_ChooseTemplet(IRpcToken token, string id, string templet)
+        private void Input_ChooseTemplet(IRpcToken token, string id, string templet)
         {
             templet
             ._(templets.Deserialize)

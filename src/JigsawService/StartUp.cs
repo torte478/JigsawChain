@@ -7,6 +7,7 @@ using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using JigsawService.Extensions;
 using JigsawService.Images;
+using JigsawService.Images.Pieces;
 using JigsawService.Templets;
 
 namespace JigsawService
@@ -18,7 +19,7 @@ namespace JigsawService
                                 IServiceCollection services)
         {
             var config = context.Configuration;
-            services.AddSingleton<IUser, Fake.User>();
+            services.AddSingleton<IInput, Fake.Input>();
 
             services.AddSingleton<IImageDecoder, JpegDecoder>();
 
