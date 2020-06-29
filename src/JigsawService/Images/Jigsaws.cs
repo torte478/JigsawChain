@@ -13,16 +13,17 @@ namespace JigsawService.Images
     {
         private static readonly Random random = new Random(DateTime.Now.Millisecond);
 
-        private readonly Size size;
         private readonly Size pieces;
         private readonly Func<Image<Rgba32>, Size, IEnumerable<IPiece>> buildPieces;
+
+        public Size Size { get; }
 
         private Jigsaws(
                     Size size, 
                     Size pieces,
                     Func<Image<Rgba32>, Size, IEnumerable<IPiece>> buildPieces)
         {
-            this.size = size;
+            Size = size;
             this.pieces = pieces;
             this.buildPieces = buildPieces;
         }
@@ -32,9 +33,10 @@ namespace JigsawService.Images
                         Size pieces,
                         Func<Image<Rgba32>, Size, IEnumerable<IPiece>> buildPieces)
         {
-            var resized = new Size(
-                size.Width - size.Width % pieces.Width,
-                size.Height - size.Height % pieces.Height);
+            var side = Math.Min(
+                            size.Width / pieces.Width, 
+                            size.Height / pieces.Height);
+            var resized = new Size(side * pieces.Width,side * pieces.Height);
 
             return new Jigsaws(resized, pieces, buildPieces);
         }
@@ -43,7 +45,7 @@ namespace JigsawService.Images
         {
             var preview = origin
                             .CloneAs<Rgba32>()
-                            .Clone(_ => _.Resize(size));
+                            .Clone(_ => _.Resize(Size));
 
             foreach (var piece in buildPieces(preview, pieces))
                 Fill(piece, templet);

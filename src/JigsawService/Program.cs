@@ -1,6 +1,9 @@
 using System;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Hosting;
 using JigsawService.Extensions;
+
+[assembly: InternalsVisibleTo("JigsawService.Tests")]
 
 namespace JigsawService
 {

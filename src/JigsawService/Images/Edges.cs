@@ -14,5 +14,20 @@
             Bottom = bottom;
             Left = left;
         }
+
+        public override string ToString()
+        {
+            return $"{ToChar(Top)}{ToChar(Right)}{ToChar(Bottom)}{ToChar(Left)}";
+        }
+
+        private static char ToChar(Edge edge)
+        {
+            return edge switch
+            {
+                Edge.Flat => 'f',
+                Edge.Inside => 'i',
+                _ => 'o'
+            };
+        }
     }
 }

@@ -7,6 +7,7 @@ namespace JigsawService.Images
     {
         int Count { get; }
         Size Canvas { get; }
+        Edges Edges { get; }
         Rgba32[] ToPixels();
         IPiece Draw(Image<Rgba32> image);
     }

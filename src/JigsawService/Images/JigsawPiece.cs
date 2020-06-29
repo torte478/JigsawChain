@@ -20,24 +20,28 @@ namespace JigsawService.Images
 
         public Size Canvas { get; set; }
 
+        public Edges Edges { get; }
+
         public JigsawPiece(
                     Image<Rgba32> origin, 
                     Point location, 
                     IPath shape, 
-                    Size canvas)
+                    Size canvas,
+                    Edges edges)
         {
             this.origin = origin;
             this.location = location;
             this.shape = shape;
             count = new Lazy<int>(() => ToPixels().Length);
             Canvas = canvas;
+            Edges = edges;
         }
 
         public IPiece Draw(Image<Rgba32> image)
         {
             using var resized = image.Clone(_ => _.Resize(Canvas));
             var brush = new ImageBrush(resized);
-            origin.Mutate(_ => _.Fill(brush, shape));
+            origin.Mutate(_ => _.Fill(brush, shape).Draw(Color.Black, 1, shape));
             return this;
         }
 
@@ -51,11 +55,15 @@ namespace JigsawService.Images
 
             var masked = Color.Red.ToPixel<Rgba32>();
             for (var i = 0; i < mask.Height; ++i)
-            for (var j = 0; j < mask.Width; ++j)
-            {
-                if (mask[j, i] == masked)
-                    pixels.Add(origin[location.X + j, location.Y + i]);
-            }   
+                for (var j = 0; j < mask.Width; ++j)
+                    if (mask[i, j] == masked)
+                    {
+                        var x = location.X + j;
+                        var y = location.Y + i;
+                        if (origin.Bounds().Contains(x, y))
+                            pixels.Add(origin[x, y]);
+                    }
+                    
             return pixels.ToArray();
         }
     }

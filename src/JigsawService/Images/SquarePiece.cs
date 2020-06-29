@@ -15,11 +15,14 @@ namespace JigsawService.Images
 
         public Size Canvas { get; }
 
+        public Edges Edges { get;  }
+
         public SquarePiece(Image<Rgba32> origin, Point start, Size size)
         {
             this.origin = origin;
             this.start = start;
             Canvas = size;
+            Edges = new Edges(Edge.Flat, Edge.Flat, Edge.Flat, Edge.Flat);
         }
 
         public static IEnumerable<IPiece> DecomposeImage(

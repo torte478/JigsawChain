@@ -50,7 +50,10 @@ namespace JigsawService
                         ),
 
                 //buildPieces: SquarePiece.DecomposeImage));
-                buildPieces: new JigsawPieces().Build));
+                buildPieces: new JigsawPieces(
+                        generateEdges: new RandomEdges().Generate,
+                        buildShapes: PieceShapes.Create)
+                    .Build));
 
             services.AddSingleton<IImages>(_ => new Images.Images(
                 loadImage: _.GetRequiredService<RawImages>().Load,
