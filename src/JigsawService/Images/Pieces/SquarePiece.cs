@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using JigsawService.Extensions;
+
 
 namespace JigsawService.Images.Pieces
 {
@@ -62,6 +64,12 @@ namespace JigsawService.Images.Pieces
                 for (var j = 0; j < Canvas.Width; ++j)
                     to[start.X + j] = from[j];
             }
+            return this;
+        }
+
+        public IPiece Draw(Rgba32 color)
+        {
+            origin.Mutate(_ => _.Fill(color, new RectangleF(start, Canvas)));
             return this;
         }
     }

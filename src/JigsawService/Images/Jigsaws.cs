@@ -51,6 +51,7 @@ namespace JigsawService.Images
             foreach (var piece in buildPieces(preview, pieces))
                 Fill(piece, templet);
 
+            ApplyNoice(preview, templet.Noise);
             return preview;
         }
 
@@ -58,14 +59,9 @@ namespace JigsawService.Images
         {
             var color = piece
                         ._(GetAverageColor)
-                        .ForEachColor(_ => ApplyRandomTolerance(_, templet.Tolerancy));
-
-            using var image = piece.Canvas
-                        ._(_ => new Image<Rgba32>(_.Width, _.Height))
-                        ._(_ => _.Mutate(__ => __.Fill(color)))
-                        ._(_ => ApplyNoice(_, templet.Noise, piece));
-
-            piece.Draw(image);
+                        .ForEachComponent(
+                            _ => ApplyRandomTolerance(_, templet.Tolerancy))
+                        ._(piece.Draw);
         }
 
         private Rgba32 GetAverageColor(IPiece piece)
@@ -100,14 +96,15 @@ namespace JigsawService.Images
             return (byte)next;
         }
 
-        private Image<Rgba32> ApplyNoice(Image<Rgba32> image, int noise, IPiece piece)
+        private Image<Rgba32> ApplyNoice(Image<Rgba32> image, int noise)
         {
-            var noised = noise * piece.Count / 100.0;
+            var noised = noise * (image.Width * image.Height) / 100.0;
             for (var i = 0; i < noised; ++i)
             {
-                var x = random.Next(piece.Canvas.Width);
-                var y = random.Next(piece.Canvas.Height);
-                image[x, y] = new Rgba32().ForEachColor(_ => (byte)random.Next(256));
+                var x = random.Next(image.Width);
+                var y = random.Next(image.Height);
+                image[x, y] = new Rgba32()
+                              .ForEachComponent(_ => (byte)random.Next(256));
             }
             return image;
         }

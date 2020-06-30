@@ -39,9 +39,15 @@ namespace JigsawService.Images.Pieces
 
         public IPiece Draw(Image<Rgba32> image)
         {
-            using var resized = image.Clone(_ => _.Resize(Canvas));
-            var brush = new ImageBrush(resized);
+            using var copied = image.Clone(_ => _.Resize(Canvas));
+            var brush = new ImageBrush(copied);
             origin.Mutate(_ => _.Fill(brush, shape).Draw(Color.Black, 1, shape));
+            return this;
+        }
+
+        public IPiece Draw(Rgba32 color)
+        {
+            origin.Mutate(_ => _.Fill(color, shape).Draw(Color.Black, 1, shape));
             return this;
         }
 
@@ -65,6 +71,22 @@ namespace JigsawService.Images.Pieces
                     }
                     
             return pixels.ToArray();
+        }
+
+        private IEnumerable<(int, int)> GetPixels()
+        {
+            var pixels = new List<Rgba32>();
+            using var mask = new Image<Rgba32>(Canvas.Width, Canvas.Height);
+            mask.Mutate(_ => _.Fill(
+                                Color.Red,
+                                shape.TranslateTo(new PointF(0, 0))));
+
+            var masked = Color.Red.ToPixel<Rgba32>();
+            for (var i = 0; i < mask.Height; ++i)
+                for (var j = 0; j < mask.Width; ++j)
+                    if (mask[i, j] == masked)
+                        yield return (j, i);
+                        
         }
     }
 }

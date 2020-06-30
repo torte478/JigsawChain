@@ -10,5 +10,6 @@ namespace JigsawService.Images.Pieces
         Edges Edges { get; }
         Rgba32[] ToPixels();
         IPiece Draw(Image<Rgba32> image);
+        IPiece Draw(Rgba32 color);
     }
 }
