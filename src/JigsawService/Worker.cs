@@ -7,41 +7,53 @@ using SixLabors.ImageSharp;
 using JigsawService.Extensions;
 using JigsawService.Images;
 using JigsawService.Templets;
+using JigsawService.Images.Pieces;
 
 namespace JigsawService
 {
     internal sealed class Worker : BackgroundService
     {
-        private readonly IInput user;
+        private readonly IInput input;
         private readonly IImages images;
         private readonly IStored<string, Image> imageCache;
         private readonly IStored<string, TaskInfo> taskCache;
         private readonly IRawTemplets templets;
-        private readonly ICoins coins;
+
+        private readonly ICoinService coinService;
+        private readonly IImageService imageService;
+        private readonly IPieceSerivce pieceService;
+
         private readonly ILogger<Worker> logger;
 
         public Worker(
-                IInput user, 
-                IImages images, 
+                IInput input,
+                IImages images,
                 IStored<string, Image> imageCache,
                 IStored<string, TaskInfo> taskCache,
                 IRawTemplets templets,
-                ICoins coins,
+                ICoinService coinService,
+                IImageService imageService,
+                IPieceSerivce pieceService,
                 ILogger<Worker> logger)
         {
-            this.user = user;
+            this.input = input;
             this.images = images;
             this.imageCache = imageCache;
             this.taskCache = taskCache;
             this.templets = templets;
-            this.coins = coins;
+
+            this.coinService = coinService;
+            this.imageService = imageService;
+            this.pieceService = pieceService;
+
             this.logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            user.UploadJigsaw += Input_UploadJigsaw;
-            user.ChooseTemplet += Input_ChooseTemplet;
+            input.UploadJigsaw += Input_UploadJigsaw;
+            input.ChooseTemplet += Input_ChooseTemplet;
+            input.ConfirmJigsaw += Input_ConfirmJigsaw;
 
             Task.Run(Fake);
 
@@ -54,10 +66,12 @@ namespace JigsawService
             {
                 Task.Delay(100).Wait();
 
-                (user as Fake.Input).RaiseUploadJigsawEvent(
+                (input as Fake.Input).RaiseUploadJigsawEvent(
                     @"d:\jigsawChain\images\input\1.jpg");
 
-                (user as Fake.Input).RaiseChooseTempletEvent("42", 3, 1);
+                (input as Fake.Input).RaiseChooseTempletEvent("42", 3, 1);
+
+                (input as Fake.Input).RaiseConfirmJigsawEvent("42", true);
             }
             catch (Exception ex)
             {
@@ -73,7 +87,7 @@ namespace JigsawService
             ._(images.Load)
             .Match(
                 right: _ => ProcessJigsaw(token, _),
-                left: _ => user.SendError(token, _));
+                left: _ => input.SendError(token, _));
         }
 
         private void ProcessJigsaw(IRpcToken token, Image image)
@@ -81,7 +95,7 @@ namespace JigsawService
             var stored = imageCache.Store(image);
             var templet = templets.Serialize();
 
-            user.SendTemplet(token, stored, templet);
+            input.SendTemplet(token, stored, templet);
         }
 
         private void Input_ChooseTemplet(IRpcToken token, string id, string templet)
@@ -90,12 +104,12 @@ namespace JigsawService
             ._(templets.Deserialize)
             .Match(
                 right: _ => ProcessTemplet(token, id, _),
-                left: _ => user.SendError(token, _));
+                left: _ => input.SendError(token, _));
         }
 
         private void ProcessTemplet(IRpcToken token, string id, Templet templet)
         {
-            var cost = coins.CalculateCostAsync(templet);
+            var cost = coinService.CalculateCostAsync(templet);
             var preview = images.BuildPreview(imageCache.Read(id), templet);
             var stored = taskCache.Store(new TaskInfo
             {
@@ -104,7 +118,39 @@ namespace JigsawService
                 Edges = preview.edges,
                 Cost = cost.Result
             });
-            user.SendPreview(token, stored, preview.image, cost.Result);
+            input.SendPreview(token, stored, preview.image, cost.Result);
+        }
+
+        private void Input_ConfirmJigsaw(IRpcToken token, string id, bool confirm)
+        {
+            var task = taskCache.Read(id);
+            if (confirm)
+            {
+                var paid = coinService.TryPayJigsawCreationAsync(token, task.Cost);
+                if (paid.Result.IsLeft)
+                {
+                    input.SendError(token, paid.Result.Left);
+                    return;
+                }
+
+                var saved = imageService.SaveImageAsync(task.ImageId._(imageCache.Read));
+                var scheduled = pieceService.SaveTaskAsync(token, task);
+                if (saved.Result.IsLeft)
+                {
+                    input.SendError(token, paid.Result.Left);
+                    return;
+                }
+                if (scheduled.Result.IsLeft)
+                {
+                    input.SendError(token, scheduled.Result.Left);
+                    return;
+                }
+
+                input.SendConfirmation(token, scheduled.Result.Right);
+            }
+
+            imageCache.Remove(task.ImageId);
+            taskCache.Remove(id);
         }
     }
 }

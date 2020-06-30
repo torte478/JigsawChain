@@ -70,7 +70,10 @@ namespace JigsawService
 
             services.AddSingleton<IRawTemplets, RawTemplets>();
 
-            services.AddSingleton<ICoins, Fake.Coins>();
+            services.AddSingleton<ICoinService>(new Fake.CoinService(true));
+            services.AddSingleton<IImageService>(new Fake.ImageService(true));
+            services.AddSingleton<IPieceSerivce>(new Fake.PieceService(true));
+
 
             services.AddHostedService<Worker>();
         }

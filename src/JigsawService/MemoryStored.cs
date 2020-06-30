@@ -30,6 +30,11 @@ namespace JigsawService
             return stored[id];
         }
 
+        public bool Remove(TKey id)
+        {
+            return stored.Remove(id);
+        }
+
         public TKey Store(TValue value)
         {
             var id = generateId();

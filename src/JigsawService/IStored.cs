@@ -7,5 +7,6 @@
         bool IsStored(TKey id);
         TValue Extract(TKey id);
         TValue Read(TKey id);
+        bool Remove(TKey id);
     }
 }

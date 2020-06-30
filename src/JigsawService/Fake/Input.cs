@@ -11,6 +11,7 @@ namespace JigsawService.Fake
 
         public event Action<IRpcToken, byte[]> UploadJigsaw;
         public event Action<IRpcToken, string, string> ChooseTemplet;
+        public event Action<IRpcToken, string, bool> ConfirmJigsaw;
 
         public Input(ILogger<Input> logger)
         {
@@ -33,21 +34,34 @@ namespace JigsawService.Fake
             ChooseTemplet.Invoke(null, id, templet);
         }
 
+        public void RaiseConfirmJigsawEvent(string id, bool confirm)
+        {
+            ConfirmJigsaw.Invoke(null, id, confirm);
+        }
+
         public IInput SendError(IRpcToken token, string message)
         {
             logger.LogInformation($"Error: {message}");
             return this;
         }
 
-        public void SendTemplet(IRpcToken token, string id, string templet)
+        public IInput SendTemplet(IRpcToken token, string id, string templet)
         {
             logger.LogDebug($"Response: {id} {templet}");
+            return this;
         }
 
-        public void SendPreview(IRpcToken token, string id, Image preview, int cost)
+        public IInput SendPreview(IRpcToken token, string id, Image preview, int cost)
         {
             preview.Save($"d:\\jigsawChain\\images\\output\\1.jpg");
             logger.LogDebug($"Responce: {id} {cost}");
+            return this;
+        }
+
+        public IInput SendConfirmation(IRpcToken token, string id)
+        {
+            logger.LogDebug($"Response: {id}");
+            return this;
         }
     }
 }
