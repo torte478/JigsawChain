@@ -22,15 +22,19 @@ namespace JigsawService.Images.Pieces
 
         public Edges Edges { get; }
 
+        public Point JigsawPosition { get; }
+
         public JigsawPiece(
                     Image<Rgba32> origin, 
                     Point location, 
+                    Point jigsawPosition,
                     IPath shape, 
                     Size canvas,
                     Edges edges)
         {
             this.origin = origin;
             this.location = location;
+            JigsawPosition = jigsawPosition;
             this.shape = shape;
             count = new Lazy<int>(() => ToPixels().Length);
             Canvas = canvas;

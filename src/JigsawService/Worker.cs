@@ -14,27 +14,27 @@ namespace JigsawService
     {
         private readonly IInput user;
         private readonly IImages images;
-        private readonly IStored<string, Image> cache;
+        private readonly IStored<string, Image> imageCache;
+        private readonly IStored<string, TaskInfo> taskCache;
         private readonly IRawTemplets templets;
         private readonly ICoins coins;
-        private readonly IStored<string, int> costs;
         private readonly ILogger<Worker> logger;
 
         public Worker(
                 IInput user, 
                 IImages images, 
-                IStored<string, Image> cache, 
+                IStored<string, Image> imageCache,
+                IStored<string, TaskInfo> taskCache,
                 IRawTemplets templets,
                 ICoins coins,
-                IStored<string, int> costs,
                 ILogger<Worker> logger)
         {
             this.user = user;
             this.images = images;
-            this.cache = cache;
+            this.imageCache = imageCache;
+            this.taskCache = taskCache;
             this.templets = templets;
             this.coins = coins;
-            this.costs = costs;
             this.logger = logger;
         }
 
@@ -78,7 +78,7 @@ namespace JigsawService
 
         private void ProcessJigsaw(IRpcToken token, Image image)
         {
-            var stored = cache.Store(image);
+            var stored = imageCache.Store(image);
             var templet = templets.Serialize();
 
             user.SendTemplet(token, stored, templet);
@@ -96,10 +96,15 @@ namespace JigsawService
         private void ProcessTemplet(IRpcToken token, string id, Templet templet)
         {
             var cost = coins.CalculateCostAsync(templet);
-            var preview = images.BuildPreview(cache.Extract(id), templet);
-            var stored = cache.Store(preview);
-            costs.Store(stored, cost.Result);
-            user.SendPreview(token, stored, preview, cost.Result);
+            var preview = images.BuildPreview(imageCache.Read(id), templet);
+            var stored = taskCache.Store(new TaskInfo
+            {
+                ImageId = id,
+                Templet = templet,
+                Edges = preview.edges,
+                Cost = cost.Result
+            });
+            user.SendPreview(token, stored, preview.image, cost.Result);
         }
     }
 }

@@ -25,6 +25,11 @@ namespace JigsawService
             return stored.ContainsKey(id);
         }
 
+        public TValue Read(TKey id)
+        {
+            return stored[id];
+        }
+
         public TKey Store(TValue value)
         {
             var id = generateId();

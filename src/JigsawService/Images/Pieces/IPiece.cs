@@ -5,6 +5,7 @@ namespace JigsawService.Images.Pieces
 {
     internal interface IPiece
     {
+        Point JigsawPosition { get; }
         int Count { get; }
         Size Canvas { get; }
         Edges Edges { get; }

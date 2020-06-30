@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
@@ -42,17 +43,26 @@ namespace JigsawService.Images
             return new Jigsaws(resized, pieces, buildPieces);
         }
 
-        public Image BuildPreview(Image origin, Templet templet)
+        public (Image, Edges[,]) BuildPreview(Image origin, Templet templet)
         {
             var preview = origin
                             .CloneAs<Rgba32>()
                             .Clone(_ => _.Resize(Size));
 
-            foreach (var piece in buildPieces(preview, pieces))
+            var builded = buildPieces(preview, pieces).ToArray();
+            foreach (var piece in builded)
                 Fill(piece, templet);
 
             ApplyNoice(preview, templet.Noise);
-            return preview;
+            return (preview, BuildEdgesMatrix(builded));
+        }
+
+        private Edges[,] BuildEdgesMatrix(IPiece[] builded)
+        {
+            var edges = new Edges[pieces.Width, pieces.Height];
+            foreach (var piece in builded)
+                edges[piece.JigsawPosition.X, piece.JigsawPosition.Y] = piece.Edges;
+            return edges;
         }
 
         private void Fill(IPiece piece, Templet templet)

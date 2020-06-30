@@ -6,5 +6,6 @@
         TKey Store(TKey key, TValue value);
         bool IsStored(TKey id);
         TValue Extract(TKey id);
+        TValue Read(TKey id);
     }
 }

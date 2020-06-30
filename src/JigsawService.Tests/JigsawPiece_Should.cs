@@ -14,6 +14,7 @@ namespace JigsawService.Images.Pieces.Tests
             var piece = new JigsawPiece(
                 origin: new Image<Rgba32>(10, 10),
                 location: new Point(0, 0),
+                jigsawPosition: new Point(0, 0),
                 shape: new PathBuilder()
                             .AddLine(0, 0, 100, 0)
                             .AddLine(100, 0, 50, 100)

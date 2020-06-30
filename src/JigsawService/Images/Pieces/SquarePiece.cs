@@ -19,10 +19,17 @@ namespace JigsawService.Images.Pieces
 
         public Edges Edges { get;  }
 
-        public SquarePiece(Image<Rgba32> origin, Point start, Size size)
+        public Point JigsawPosition { get; }
+
+        public SquarePiece(
+                    Image<Rgba32> origin, 
+                    Point start, 
+                    Point jigsawPosition, 
+                    Size size)
         {
             this.origin = origin;
             this.start = start;
+            JigsawPosition = jigsawPosition;
             Canvas = size;
             Edges = new Edges(Edge.Flat, Edge.Flat, Edge.Flat, Edge.Flat);
         }
@@ -37,8 +44,12 @@ namespace JigsawService.Images.Pieces
 
             for (var i = 0; i < pieces.Height; ++i)
                 for (var j = 0; j < pieces.Width; ++j)
-                    yield return new Point(j * size.Width, i * size.Height)
-                                 ._(_ => new SquarePiece(image, _, size));
+                {
+                    var piece = new Point(j * size.Width, i * size.Height)
+                                 ._(_ => 
+                                    new SquarePiece(image, _, new Point(j, i), size));
+                    yield return piece;
+                }
         }
 
         public Rgba32[] ToPixels()

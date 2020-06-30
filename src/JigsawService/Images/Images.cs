@@ -7,11 +7,11 @@ namespace JigsawService.Images
     internal sealed class Images : IImages
     {
         private readonly Func<byte[], Maybe<Image, string>> loadImage;
-        private readonly Func<Image, Templet, Image> buildPreview;
+        private readonly Func<Image, Templet, (Image, Edges[,])> buildPreview;
 
         public Images(
                     Func<byte[], Maybe<Image, string>> loadImage,
-                    Func<Image, Templet, Image> buildPreview) 
+                    Func<Image, Templet, (Image, Edges[,])> buildPreview) 
         {
             this.loadImage = loadImage;
             this.buildPreview = buildPreview;
@@ -22,7 +22,7 @@ namespace JigsawService.Images
             return loadImage(image);
         }
 
-        public Image BuildPreview(Image origin, Templet templet)
+        public (Image, Edges[,]) BuildPreview(Image origin, Templet templet)
         {
             return buildPreview(origin, templet);
         }

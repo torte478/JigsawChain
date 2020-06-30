@@ -50,11 +50,11 @@ namespace JigsawService
                         config.Get("Prototype").Get("Pieces").Get("Height").ToInt()
                         ),
 
-                //buildPieces: SquarePiece.DecomposeImage));
-                buildPieces: new JigsawPieces(
-                        generateEdges: new RandomEdges().Generate,
-                        buildShapes: PieceShapes.Create)
-                    .Build));
+                buildPieces: SquarePiece.DecomposeImage));
+                //buildPieces: new JigsawPieces(
+                //        generateEdges: new RandomEdges().Generate,
+                //        buildShapes: PieceShapes.Create)
+                //    .Build));
 
             services.AddSingleton<IImages>(_ => new Images.Images(
                 loadImage: _.GetRequiredService<RawImages>().Load,
@@ -65,8 +65,8 @@ namespace JigsawService
 
             services.AddSingleton<IStored<string, Image>>(
                 _ => new MemoryStored<string, Image>(generateId));
-            services.AddSingleton<IStored<string, int>>(
-                _ => new MemoryStored<string, int>(generateId));
+            services.AddSingleton<IStored<string, TaskInfo>>(
+                _ => new MemoryStored<string, TaskInfo>(generateId));
 
             services.AddSingleton<IRawTemplets, RawTemplets>();
 

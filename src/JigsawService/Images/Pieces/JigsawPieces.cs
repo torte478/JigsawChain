@@ -33,6 +33,7 @@ namespace JigsawService.Images.Pieces
                 var piece =  new JigsawPiece(
                     origin: image,
                     location: location,
+                    jigsawPosition: new Point(j, i),
                     shape: shapes.Build(location, edges),
                     canvas: new Size(shapes.Width, shapes.Width),
                     edges: edges);
