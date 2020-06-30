@@ -71,7 +71,7 @@ namespace JigsawService
 
                 (input as Fake.Input).RaiseChooseTempletEvent("42", 3, 1);
 
-                (input as Fake.Input).RaiseConfirmJigsawEvent("42", true);
+                (input as Fake.Input).RaiseConfirmJigsawEvent("42");
             }
             catch (Exception ex)
             {
@@ -121,36 +121,32 @@ namespace JigsawService
             input.SendPreview(token, stored, preview.image, cost.Result);
         }
 
-        private void Input_ConfirmJigsaw(IRpcToken token, string id, bool confirm)
+        private void Input_ConfirmJigsaw(IRpcToken token, string id)
         {
             var task = taskCache.Read(id);
-            if (confirm)
-            {
-                var paid = coinService.TryPayJigsawCreationAsync(token, task.Cost);
-                if (paid.Result.IsLeft)
-                {
-                    input.SendError(token, paid.Result.Left);
-                    return;
-                }
-
-                var saved = imageService.SaveImageAsync(task.ImageId._(imageCache.Read));
-                var scheduled = pieceService.SaveTaskAsync(token, task);
-                if (saved.Result.IsLeft)
-                {
-                    input.SendError(token, paid.Result.Left);
-                    return;
-                }
-                if (scheduled.Result.IsLeft)
-                {
-                    input.SendError(token, scheduled.Result.Left);
-                    return;
-                }
-
-                input.SendConfirmation(token, scheduled.Result.Right);
-            }
-
-            imageCache.Remove(task.ImageId);
-            taskCache.Remove(id);
+            task.Cost
+                ._(_ => coinService.TryPayJigsawCreationAsync(token, _))
+                .Result
+                .Monad(_ => task
+                            .ImageId
+                            ._(imageCache.Read)
+                            ._(imageService.SaveImageAsync))
+                .Monad(x => pieceService
+                            .SaveTaskAsync(token, task)
+                            ._(y => new { first = x, second = y }))
+                .Monad(_ => _.first.Result.Match(
+                                right: __ => _.second.Result,
+                                left: __ => _.first.Result.Left))
+                .MonadUp()
+                .MonadUp()
+                .Match(
+                    right: _ =>
+                    {
+                        input.SendConfirmation(token, _);
+                        imageCache.Remove(task.ImageId);
+                        taskCache.Remove(id);
+                    },
+                    left: _ => input.SendError(token, _));
         }
     }
 }

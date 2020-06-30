@@ -1,4 +1,5 @@
 ﻿using System;
+using JigsawService.Extensions;
 
 namespace JigsawService
 {
@@ -35,14 +36,6 @@ namespace JigsawService
                         new Lazy<TRight>(() => throw new Exception("Maybe is left")),
                         new Lazy<TLeft>(() => value)
                         );
-        }
-
-        public void Match(Action<TRight> right, Action<TLeft> left)
-        {
-            if (IsRight)
-                right(Right);
-            else
-                left(Left);
         }
     }
 }

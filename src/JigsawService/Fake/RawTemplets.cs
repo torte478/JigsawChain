@@ -7,7 +7,7 @@ namespace JigsawService.Fake
     {
         public Maybe<Templet, string> Deserialize(string templet)
         {
-            return A<Templet, string>.Right(new Templet(1, 2));
+            return new Templet(1, 2).Right<Templet, string>();
         }
 
         public string Serialize()

@@ -24,14 +24,14 @@ namespace JigsawService.Templets
                        ._(_ => new Templet(
                            _["tolerancy"].Value<int>(),
                            _["noise"].Value<int>()))
-                       ._(A<Templet, string>.Right);
+                       .Right<Templet, string>();
 
             }
             catch (Exception ex)
             {
                 var message = $"Parsing templet error: {ex.Message}";
                 logger.LogInformation(message);
-                return A<Templet, string>.Left(message);
+                return message.Left<Templet, string>();
             }
         }
 

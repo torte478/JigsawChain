@@ -23,8 +23,8 @@ namespace JigsawService.Fake
                                                     int cost)
         {
             return Task.Run(() => right
-                                  ? A<bool, string>.Right(true)
-                                  : A<bool, string>.Left("Can't pay operation"));
+                                  ? true.Right<bool, string>()
+                                  : "Can't pay operation".Left<bool, string>());
         }
     }
 }

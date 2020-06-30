@@ -11,7 +11,7 @@ namespace JigsawService.Fake
 
         public event Action<IRpcToken, byte[]> UploadJigsaw;
         public event Action<IRpcToken, string, string> ChooseTemplet;
-        public event Action<IRpcToken, string, bool> ConfirmJigsaw;
+        public event Action<IRpcToken, string> ConfirmJigsaw;
 
         public Input(ILogger<Input> logger)
         {
@@ -34,14 +34,14 @@ namespace JigsawService.Fake
             ChooseTemplet.Invoke(null, id, templet);
         }
 
-        public void RaiseConfirmJigsawEvent(string id, bool confirm)
+        public void RaiseConfirmJigsawEvent(string id)
         {
-            ConfirmJigsaw.Invoke(null, id, confirm);
+            ConfirmJigsaw.Invoke(null, id);
         }
 
         public IInput SendError(IRpcToken token, string message)
         {
-            logger.LogInformation($"Error: {message}");
+            logger.LogError($"Error: {message}");
             return this;
         }
 

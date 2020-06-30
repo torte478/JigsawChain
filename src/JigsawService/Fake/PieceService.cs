@@ -17,8 +17,8 @@ namespace JigsawService.Fake
                                                 TaskInfo task)
         {
             return Task.Run(() => right
-                                  ? A<string, string>.Right("123345")
-                                  : A<string, string>.Left("Can't register task"));
+                                  ? "123345".Right<string, string>()
+                                  : "Can't register task".Left<string, string>());
         }
     }
 }

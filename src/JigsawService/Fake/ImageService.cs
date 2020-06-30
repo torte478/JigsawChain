@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using JigsawService.Extensions;
 using SixLabors.ImageSharp;
+using JigsawService.Extensions;
 
 namespace JigsawService.Fake
 {
@@ -16,8 +16,8 @@ namespace JigsawService.Fake
         public Task<Maybe<bool, string>> SaveImageAsync(Image image)
         {
             return Task.Run(() => right
-                                  ? A<bool, string>.Right(true)
-                                  : A<bool, string>.Left("Can't store image"));
+                                  ? true.Right<bool, string>()
+                                  : "Can't store image".Left<bool, string>());
         }
     }
 }

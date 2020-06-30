@@ -31,14 +31,14 @@ namespace JigsawService.Images
                 var decoded = decoder.Decode(Configuration.Default, stream);
 
                 if (!RequiresLimitations(decoded))
-                    return A<Image, string>.Left("Image has wrong size");
+                    return "Image has wrong size".Left<Image, string>();
 
-                return decoded._(A<Image, string>.Right);
+                return decoded.Right<Image, string>();
             }
             catch (Exception ex)
             {
                 logger.LogDebug($"Image decoding error: {ex.Message}");
-                return A<Image, string>.Left("Wrong image format");
+                return "Wrong image format".Left<Image, string>();
             }
         }
 
