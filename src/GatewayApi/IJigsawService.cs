@@ -5,6 +5,7 @@ namespace GatewayApi
 {
     public interface IJigsawService
     {
-        Task<UploadJigsawResponse> UploadJigsaw(byte[] image);
+        Task<UploadJigsawResponse> UploadJigsaw(UploadJigsawRequest request);
+        Task<ChooseTempletResponse> ChooseTemplet(ChooseTempletRequest request);
     }
 }
