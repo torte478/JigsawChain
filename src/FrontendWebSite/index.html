@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <title>My test page</title>
+    <style>
+        form {
+            /* Center the form on the page */
+            margin: 0 auto;
+            width: 400px;
+            /* Form outline */
+            padding: 1em;
+            border: 1px solid #CCC;
+            border-radius: 1em;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        form li + li {
+            margin-top: 1em;
+        }
+
+        label {
+            /* Uniform size & alignment */
+            display: inline-block;
+            width: 90px;
+            text-align: right;
+        }
+
+        input,
+        textarea {
+            /* To make sure that all text fields have the same font settings
+     By default, textareas have a monospace font */
+            font: 1em sans-serif;
+            /* Uniform text field size */
+            width: 300px;
+            box-sizing: border-box;
+            /* Match form field borders */
+            border: 1px solid #999;
+        }
+
+            input:focus,
+            textarea:focus {
+                /* Additional highlight for focused elements */
+                border-color: #000;
+            }
+
+        textarea {
+            /* Align multiline text fields with their labels */
+            vertical-align: top;
+            /* Provide space to type some text */
+            height: 5em;
+        }
+
+        .button {
+            /* Align buttons with the text fields */
+            padding-left: 90px; /* same size as the label elements */
+        }
+
+        button {
+            /* This extra margin represent roughly the same space as the space
+     between the labels and their text fields */
+            margin-left: .5em;
+        }
+    </style>
+  </head>
+  <body>
+    <p>This is my page v.2.0</p>
+      <ul>
+        <li>
+            <label for="id">Id:</label>
+            <input type="text" id="jigsaw_id_text" name="jigsaw_id" />
+        </li>
+        <li>
+            <button>Confirm jigsaw</button>
+        </li>
+    </ul>
+    <script>
+        const btn = document.querySelector('button');
+        const txt = document.querySelector('input');
+        async function sendData(data) {
+            let respone = await fetch('http://localhost:5000/jigsaw/confirmJigsaw', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            let json = await respone.json();
+            console.log(json);
+        }
+
+        btn.addEventListener('click', function () {
+            sendData({ id: txt.value });
+        });
+    </script>
+  </body>
+</html>
