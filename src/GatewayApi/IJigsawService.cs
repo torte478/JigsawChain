@@ -7,5 +7,6 @@ namespace GatewayApi
     {
         Task<UploadJigsawResponse> UploadJigsaw(UploadJigsawRequest request);
         Task<ChooseTempletResponse> ChooseTemplet(ChooseTempletRequest request);
+        Task<ConfirmJigsawResponse> ConfirmJigsaw(ConfirmJigsawRequest request);
     }
 }

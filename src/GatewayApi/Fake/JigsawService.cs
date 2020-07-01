@@ -16,6 +16,15 @@ namespace GatewayApi.Fake
             });
         }
 
+        public Task<ConfirmJigsawResponse> ConfirmJigsaw(
+                                                ConfirmJigsawRequest request)
+        {
+            return Task.Run(() => new ConfirmJigsawResponse
+            {
+                Id = request.Id + request.Id,
+            });
+        }
+
         public Task<UploadJigsawResponse> UploadJigsaw(UploadJigsawRequest request)
         {
             return Task.Run(() => new UploadJigsawResponse

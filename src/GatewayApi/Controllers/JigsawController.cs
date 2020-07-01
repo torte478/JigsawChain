@@ -53,5 +53,19 @@ namespace GatewayApi.Controllers
             logger.LogInformation($"Response: {response.Id}");
             return response;
         }
+
+        [HttpPost]
+        [Route("[action]")]
+        public async Task<ActionResult<ConfirmJigsawResponse>> ConfirmJigsaw(
+                                                    ConfirmJigsawRequest request)
+        {
+            logger.LogInformation(
+                $"Request (confirm jigsaw): {request.Id}");
+
+            var response = await jigsawService.ConfirmJigsaw(request);
+
+            logger.LogInformation($"Response: {response.Id}");
+            return response;
+        }
     }
 }
