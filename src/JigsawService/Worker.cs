@@ -124,21 +124,15 @@ namespace JigsawService
         private void Input_ConfirmJigsaw(IRpcToken token, string id)
         {
             var task = taskCache.Read(id);
-            task.Cost
-                ._(_ => coinService.TryPayJigsawCreationAsync(token, _))
+            coinService
+                .TryPayJigsawCreationAsync(token, task.Cost)
                 .Result
-                .Monad(_ => task
-                            .ImageId
-                            ._(imageCache.Read)
-                            ._(imageService.SaveImageAsync))
-                .Monad(x => pieceService
-                            .SaveTaskAsync(token, task)
-                            ._(y => new { first = x, second = y }))
-                .Monad(_ => _.first.Result.Match(
-                                right: __ => _.second.Result,
-                                left: __ => _.first.Result.Left))
-                .MonadUp()
-                .MonadUp()
+                .IfRight(_ => imageCache.Read(task.ImageId)
+                              ._(imageService.SaveImageAsync)
+                              .Result)
+                .IfRight(_ => pieceService
+                              .SaveTaskAsync(token, task)
+                              .Result)
                 .Match(
                     right: _ =>
                     {

@@ -53,5 +53,14 @@ namespace JigsawService.Extensions
                    ? origin.Right
                    : Left<TRight, TLeft>(origin.Left);
         }
+
+        public static Maybe<TRightOut, TLeft> IfRight<TRightIn, TRightOut, TLeft>(
+                                    this Maybe<TRightIn, TLeft> origin,
+                                    Func<TRightIn, Maybe<TRightOut, TLeft>> f)
+        {
+            return origin.IsRight
+                   ? f(origin.Right)
+                   : Left<TRightOut, TLeft>(origin.Left);
+        }
     }
 }
