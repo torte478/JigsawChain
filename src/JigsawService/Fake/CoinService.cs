@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using JigsawService.Extensions;
+using JigsawService.Services;
 using JigsawService.Templets;
 
 namespace JigsawService.Fake

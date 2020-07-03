@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
+using JigsawService.DB;
 using JigsawService.Extensions;
 using JigsawService.Images;
 using JigsawService.Templets;
-using JigsawService.Images.Pieces;
+using JigsawService.Services;
 
 namespace JigsawService
 {

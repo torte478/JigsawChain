@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using JigsawService.Extensions;
+using JigsawService.Services;
 
 namespace JigsawService.Fake
 {

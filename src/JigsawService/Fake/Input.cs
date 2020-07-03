@@ -2,6 +2,7 @@
 using System.IO;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
+using JigsawService.Services;
 
 namespace JigsawService.Fake
 {

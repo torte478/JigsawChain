@@ -1,7 +1,7 @@
 ﻿using SixLabors.ImageSharp;
 using System.Threading.Tasks;
 
-namespace JigsawService
+namespace JigsawService.Services
 {
     internal interface IImageService
     {

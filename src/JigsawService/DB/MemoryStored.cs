@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace JigsawService
+namespace JigsawService.DB
 {
     internal sealed class MemoryStored<TKey, TValue> : IStored<TKey, TValue>
     {

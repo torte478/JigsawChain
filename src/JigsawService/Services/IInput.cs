@@ -1,7 +1,7 @@
 ﻿using System;
 using SixLabors.ImageSharp;
 
-namespace JigsawService
+namespace JigsawService.Services
 {
     internal interface IInput
     {
@@ -11,7 +11,7 @@ namespace JigsawService
 
         IInput SendTemplet(IRpcToken token, string id, string templet);
         IInput SendPreview(IRpcToken token, string id, Image preview, int cost);
-        IInput SendConfirmation(IRpcToken token, string id); 
+        IInput SendConfirmation(IRpcToken token, string id);
 
         IInput SendError(IRpcToken token, string message);
     }

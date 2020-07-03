@@ -1,4 +1,4 @@
-﻿namespace JigsawService
+﻿namespace JigsawService.Services
 {
     internal interface IRpcToken
     {

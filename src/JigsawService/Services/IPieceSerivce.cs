@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using JigsawService.DB;
+using System.Threading.Tasks;
 
-namespace JigsawService
+namespace JigsawService.Services
 {
     internal interface IPieceSerivce
     {

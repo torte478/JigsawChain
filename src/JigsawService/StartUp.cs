@@ -5,9 +5,11 @@ using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using JigsawService.DB;
 using JigsawService.Extensions;
 using JigsawService.Images;
 using JigsawService.Images.Pieces;
+using JigsawService.Services;
 using JigsawService.Templets;
 
 namespace JigsawService

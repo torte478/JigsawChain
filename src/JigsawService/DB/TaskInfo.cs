@@ -1,7 +1,7 @@
 ﻿using JigsawService.Images;
 using JigsawService.Templets;
 
-namespace JigsawService
+namespace JigsawService.DB
 {
     internal struct TaskInfo
     {

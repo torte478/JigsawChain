@@ -1,4 +1,4 @@
-﻿namespace JigsawService
+﻿namespace JigsawService.DB
 {
     internal interface IStored<TKey, TValue>
     {
